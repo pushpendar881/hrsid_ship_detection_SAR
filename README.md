@@ -1,87 +1,109 @@
-# 🚢 ShipSense — SAR Ship Detection Frontend
+# HRSID Ship Detection SAR - Frontend
 
-A production-grade React frontend for the HRSID Faster R-CNN ship detection model,
-deployed on HuggingFace Spaces and served through this UI on Render.
+A React-based frontend for the HRSID Ship Detection system using synthetic aperture radar (SAR) imagery.
 
-## 🏗️ Stack
+## 🚀 Features
 
-| Layer | Technology |
-|---|---|
-| Frontend | React + Vite |
-| Hosting | Render (Static Site) |
-| ML Backend | HuggingFace Spaces (Docker + Gradio) |
-| Model | Faster R-CNN + ResNet-50 FPN (Detectron2) |
-| Dataset | HRSID (9,246 SAR images) |
+- **Real-time Ship Detection**: Upload SAR images and get instant detection results
+- **HUD-Style Interface**: Professional maritime surveillance interface design
+- **Performance Metrics**: Display actual model performance (63% AP@0.5)
+- **Responsive Design**: Works on desktop and mobile devices
 
-## ⚡ Performance
+## 🏗️ Architecture
 
-| Metric | Score |
-|---|---|
-| AP @ IoU 0.50 | 73.2% |
-| AP @ IoU 0.50:0.95 | 48.9% |
-| AP @ IoU 0.75 | 58.2% |
-| AP Small | 49.5% |
-| AP Medium | 54.7% |
+- **Model**: Faster R-CNN with ResNet-50 backbone + FPN
+- **Framework**: Detectron2
+- **Dataset**: HRSID (High-Resolution SAR Images Dataset)
+- **Training Data**: 9,246 total images (2,914 train + 728 val + 5,604 test)
+- **Performance**: 63.0% AP@0.5, 45.3% AP@0.75
 
-## 🚀 Deploy to Render (Step-by-Step)
+## 🛠️ Tech Stack
 
-### 1. Push to GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit — ShipSense frontend"
-git remote add origin https://github.com/YOUR_USERNAME/shipsense-frontend.git
-git push -u origin main
-```
+- **Frontend**: React + Vite
+- **Styling**: CSS-in-JS with custom design system
+- **API**: Gradio backend integration
+- **Deployment**: Ready for Vercel/Netlify
 
-### 2. Create Render Static Site
-1. Go to [render.com](https://render.com) → **New** → **Static Site**
-2. Connect your GitHub repo
-3. Set these settings:
-   - **Build Command:** `npm install && npm run build`
-   - **Publish Directory:** `dist`
-4. Click **Create Static Site**
-5. Render auto-deploys on every push to main ✅
-
-### 3. (Optional) Custom Domain
-In Render dashboard → your site → **Settings** → **Custom Domain**
-
-## 🛠️ Local Development
+## 📦 Installation
 
 ```bash
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
-# → http://localhost:5173
+
+# Build for production
+npm run build
 ```
 
-## 📡 API Integration
+## 🎯 Usage
 
-The frontend calls your HuggingFace Space Gradio API at:
-```
-POST https://pushpendar-hrsid-ship-detection-sar.hf.space/run/predict
-```
-
-**Note:** The HF Space may take ~30 seconds to wake up on first request
-(free tier goes to sleep after inactivity). Users will see a loading indicator.
+1. Start the development server: `npm run dev`
+2. Open http://localhost:5173 in your browser
+3. Upload a SAR image in the Detection Console
+4. Adjust confidence threshold (0.1 - 0.9)
+5. Click "DETECT SHIPS" to run inference
+6. View results with bounding boxes and confidence scores
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── components/
-│   ├── Navbar.jsx          # Fixed nav with live UTC clock
-│   ├── Hero.jsx            # Landing section with radar animation
-│   ├── DetectionPanel.jsx  # Core upload + inference + results UI
-│   ├── ModelInfo.jsx       # Architecture + performance stats
-│   ├── About.jsx           # Project description + timeline
-│   └── Footer.jsx
-├── App.jsx
-├── main.jsx
-└── index.css               # Global styles + CSS animations
-render.yaml                 # Render deployment config
+│   ├── About.jsx          # About section
+│   ├── DetectionPanel.jsx # Main detection interface
+│   ├── Footer.jsx         # Footer component
+│   ├── Hero.jsx           # Landing hero section
+│   ├── ModelInfo.jsx      # Technical specifications
+│   └── Navbar.jsx         # Navigation header
+├── App.jsx                # Main app component
+├── main.jsx              # Entry point
+└── index.css             # Global styles & design system
 ```
 
-## 🔗 Links
+## 🎨 Design System
 
-- **HF Space:** https://huggingface.co/spaces/PUSHPENDAR/hrsid_ship_detection_SAR
-- **Model Repo:** https://huggingface.co/PUSHPENDAR/hrsid-ship-detection
+The interface uses a HUD-style design with:
+- **Colors**: Dark theme with teal (#00e5c8) and amber (#ffb454) accents
+- **Typography**: Inter for UI text, JetBrains Mono for technical elements
+- **Layout**: Grid-based responsive design
+- **Components**: Custom HUD boxes with technical styling
+
+## 🔗 API Integration
+
+The frontend connects to a Gradio backend at:
+```
+https://pushpendar-hrsid-ship-detection-sar.hf.space
+```
+
+## 📊 Model Performance
+
+- **AP@0.5**: 63.0%
+- **AP@0.75**: 45.3%
+- **Training Iterations**: 5,000
+- **Inference Time**: <1.5s
+- **GPU**: Tesla T4
+
+## 🚀 Deployment
+
+The app is ready for deployment on:
+- Vercel
+- Netlify
+- GitHub Pages
+- Any static hosting service
+
+## 📝 License
+
+This project is part of the HRSID Ship Detection research.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+---
+
+Built with ❤️ for maritime surveillance and SAR image analysis.
