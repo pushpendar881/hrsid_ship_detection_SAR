@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react'
+import { dbHelpers } from '../lib/supabase'
 
 const HF_SPACE = 'https://pushpendar-hrsid-ship-detection-sar.hf.space'
 
@@ -18,12 +19,37 @@ async function callGradioAPI(imageFile, threshold) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       fn_index: 0,
-      data: [b64DataUrl, threshold],
+      data: [b64DataUrl, threshold, 'web_user'],
     }),
   })
   if (!res.ok) throw new Error(`API error: ${res.status}`)
   const json = await res.json()
   return json.data // [annotated_image, info_text]
+}
+
+// Parse detection info to extract structured data
+function parseDetectionInfo(info) {
+  if (!info) return { shipCount: 0, confidenceScores: [], boundingBoxes: [] }
+  
+  const shipCountMatch = info.match(/Detected (\d+) ship/)
+  const shipCount = shipCountMatch ? parseInt(shipCountMatch[1]) : 0
+  
+  const scoreMatch = info.match(/Confidence scores: (.+)/)
+  const confidenceScores = scoreMatch
+    ? scoreMatch[1].split(',').map(s => parseFloat(s.trim()))
+    : []
+  
+  // Extract bounding boxes from lines like "Ship 1: [x1, y1, x2, y2]"
+  const boxLines = info.split('\n').filter(l => l.trim().startsWith('Ship'))
+  const boundingBoxes = boxLines.map(line => {
+    const match = line.match(/\[([^\]]+)\]/)
+    if (match) {
+      return match[1].split(',').map(n => parseFloat(n.trim()))
+    }
+    return []
+  }).filter(box => box.length === 4)
+  
+  return { shipCount, confidenceScores, boundingBoxes }
 }
 
 function UploadZone({ onFile, file, preview }) {
@@ -187,9 +213,15 @@ export default function DetectionPanel() {
     if (!file) return
     setLoading(true); setError(null); setResult(null)
     setProgress('Connecting to HF Space...')
+    
+    const startTime = Date.now()
+    
     try {
       setProgress('Running inference...')
       const data = await callGradioAPI(file, threshold)
+      
+      const processingTime = Date.now() - startTime
+      
       // data[0] = annotated image (could be {name, data} or base64 string)
       // data[1] = info text
       let imgSrc = null
@@ -201,6 +233,31 @@ export default function DetectionPanel() {
       } else if (raw && raw.url) {
         imgSrc = raw.url.startsWith('http') ? raw.url : `${HF_SPACE}/file=${raw.url}`
       }
+      
+      const detectionInfo = parseDetectionInfo(data[1] || '')
+      
+      // Save to database
+      setProgress('Saving to database...')
+      const savedDetection = await dbHelpers.saveDetection({
+        image_name: file.name,
+        image_url: imgSrc,
+        image_hash: await generateImageHash(file),
+        ship_count: detectionInfo.shipCount,
+        confidence_scores: detectionInfo.confidenceScores,
+        bounding_boxes: detectionInfo.boundingBoxes,
+        processing_time_ms: processingTime,
+        confidence_threshold: threshold,
+        metadata: {
+          file_size: file.size,
+          file_type: file.type,
+          original_name: file.name
+        }
+      })
+      
+      if (savedDetection) {
+        console.log('Detection saved to database:', savedDetection.id)
+      }
+      
       setResult({ image: imgSrc, info: data[1] || '' })
       setProgress('')
     } catch (err) {
@@ -208,6 +265,19 @@ export default function DetectionPanel() {
       setProgress('')
     }
     setLoading(false)
+  }
+
+  // Generate a simple hash for the image file
+  const generateImageHash = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16)
+    } catch (error) {
+      console.error('Error generating hash:', error)
+      return `${file.name}_${file.size}_${Date.now()}`
+    }
   }
 
   return (
