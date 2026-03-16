@@ -7,28 +7,21 @@ const sarImages = [
     src: '/images/sar-sample-1.jpg', // You can replace with actual SAR images
     title: 'Coastal SAR Image',
     description: 'Ships detected near coastline with high resolution SAR imaging',
-    fallback: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=300&fit=crop&sat=-100&con=50'
+    fallback: 'https://www.mdpi.com/remotesensing/remotesensing-11-00786/article_deploy/html/images/remotesensing-11-00786-g005.png'
   },
   {
     id: 2,
     src: '/images/sar-sample-2.jpg',
     title: 'Open Ocean SAR',
     description: 'Multiple vessels detected in open water conditions',
-    fallback: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&sat=-100&con=50'
+    fallback: 'https://tse4.mm.bing.net/th/id/OIP.3sqJMCCcCPy_rVkZrIvzDwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3'
   },
   {
     id: 3,
     src: '/images/sar-sample-3.jpg',
     title: 'Port Area SAR',
     description: 'Dense ship traffic in port environment with clear SAR signatures',
-    fallback: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop&sat=-100&con=50'
-  },
-  {
-    id: 4,
-    src: '/images/sar-sample-4.jpg',
-    title: 'Weather Independent',
-    description: 'SAR imaging through clouds and adverse weather conditions',
-    fallback: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&sat=-100&con=50'
+    fallback: 'https://deldev.maps.arcgis.com/sharing/rest/content/items/25570660f8774bdb8fcb1307ced9b2f1/data'
   }
 ]
 
